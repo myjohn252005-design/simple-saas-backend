@@ -31,7 +31,9 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 # ---------------- APP ----------------
 app = FastAPI(title="YouTube Timestamp SaaS")
-
+@app.get("/health")
+def health():
+    return {"status": "ok"}
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
