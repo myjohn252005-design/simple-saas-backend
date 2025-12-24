@@ -15,7 +15,15 @@ from passlib.context import CryptContext
 from jose import jwt, JWTError
 
 # ---------------- CONFIG ----------------
-DATABASE_URL = os.getenv("DATABASE_URL")
+import os
+from sqlalchemy import create_engine
+
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./app.db")
+
+engine = create_engine(
+    DATABASE_URL,
+    connect_args={"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
+)
 SECRET_KEY = os.getenv("SECRET_KEY", "secret")
 ALGORITHM = "HS256"
 UPLOAD_DIR = "downloads"
@@ -35,7 +43,11 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 pwd_context = CryptContext(schemes=["bcrypt"])
 
 # ---------------- DB ----------------
-engine = create_engine(DATABASE_URL)
+# db.py (or top of main.py)
+engine = create_engine(...)
+SessionLocal = sessionmaker(bind=engine)
+# later in file
+db = SessionLocal()
 SessionLocal = sessionmaker(bind=engine)
 Base = declarative_base()
 
